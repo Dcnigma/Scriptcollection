@@ -1,0 +1,14 @@
+
+command /RandomCommand32b:
+    permission: randomcommand.use
+    trigger:
+        if the sender is console:
+            send "&cThis command can only be executed by the player."
+        else:
+            set {_commands::*} to "addmorph %player% horse" or "addmorph %player% skeleton_horse" or "addmorph %player% wolf" or "addmorph %player% ocelot" or "addmorph %player% cow" or "addmorph %player% pig" or "addmorph %player% wither_skeleton" or "addmorph %player% bat" or "addmorph %player% blaze" or "addmorph %player% cave_spider" or "addmorph %player% chicken" or "addmorph %player% creeper" or "addmorph %player% enderman" or "addmorph %player% endermite" or "addmorph %player% ghast" or "addmorph %player% guardian" or "addmorph %player% iron_golem" or "addmorph %player% magma_cube" or "addmorph %player% mushroom_cow" or "addmorph %player% zombified_piglin" or "addmorph %player% sheep" or "addmorph %player% silverfish" or "addmorph %player% skeleton" or "addmorph %player% slime" or "addmorph %player% snowman" or "addmorph %player% spider" or "addmorph %player% squid" or "addmorph %player% villager" or "addmorph %player% witch" or "addmorph %player% wither" or "addmorph %player% llama" or "addmorph %player% vex" or "addmorph %player% vindicator" or "addmorph %player% evoker" or "addmorph %player% zombie" or "addmorph %player% rabbit" or "addmorph %player% giant" or "addmorph %player% ender_dragon" or "addmorph %player% mule" or "addmorph %player% donkey" or "addmorph %player% zombie_villager" or "addmorph %player% parrot" or "addmorph %player% illusioner" or "addmorph %player% stray" or "addmorph %player% husk" or "addmorph %player% dolphin" or "addmorph %player% drowned" or "addmorph %player% cod" or "addmorph %player% salmon" or "addmorph %player% tropical_fish" or "addmorph %player% pufferfish" or "addmorph %player% phantom" or "addmorph %player% turtle" or "addmorph %player% bee" or "addmorph %player% strider" or "addmorph %player% hoglin" or "addmorph %player% zoglin" or "addmorph %player% shulker" or "addmorph %player% polar_bear" or "addmorph %player% cat" or "addmorph %player% fox" or "addmorph %player% panda" or "addmorph %player% pillager" or "addmorph %player% piglinbrute" or "addmorph %player% piglin" or "addmorph %player% ravager" or "addmorph %player% goat" or "addmorph %player% glow_squid" or "addmorph %player% axolotl" or "addmorph %player% allay" or "addmorph %player% frog" or "addmorph %player% tadpole" or "addmorph %player% warden"
+            set {_commandsSize} to size of {_commands::*}
+            set {_randomIndex} to random number between 1 and {_commandsSize}
+            set {_selectedCommand} to {_commands::%{_randomIndex}%}
+            execute console command {_selectedCommand}
+            send "&5Random Morph executed:" to console
+            send "&5You received a random morph!" to player

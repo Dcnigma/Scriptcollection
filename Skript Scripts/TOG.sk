@@ -1,0 +1,208 @@
+options:
+	prefix: &e[&6The Ore Game&e] &r
+	goal: &r&fThe goal of the game is to be the player with the most &cpoints&f, in order to get &cpoints&f you need to &amine ores&f, each ore has a set value of &cpoints&f, &aemeralds &c7&f, &bdiamonds &c5&f, &6gold &c3&f, &9lapis &c1&f, &4redstone &c1&f, &7iron &c0.5 &3copper, &c0.5 &fand &7coal &c0.5
+	time: 2 minutes
+
+on script unload:
+	delete {tog::temp::*}
+
+command /tog [<text>] [<player>]:
+	#permission: tog.start
+	trigger:
+		if argument 1 is not set:
+			message "-------------------------------------"
+			message "&l&6The Ore Game!!!!"
+			message "{@goal}"
+			message "---------------------------------------------"
+			message "       &e<> = required [] = optional"
+			message "{@prefix}/tog - &eBring up this menu"
+			message "{@prefix}/tog quit - &eLeave a game"
+			message "{@prefix}/tog accept <user> - &eAccept an invite"
+			message "{@prefix}/tog invite <user> - &eInvite a user to play"
+			message "{@prefix}/tog highscore [user] - &eView highscores"
+		else if argument 2 is not set:
+			if argument 1 is "info" or "information":
+				message "{@goal}"
+			if argument 1 is "highscore":
+				if {tog::player::%player%::highscore} is not set:
+					set {tog::player::%player%::highscore} to 0
+				message "{@prefix}Your highscore is &l%{tog::player::%player%::highscore}%"
+			else if argument 1 is "quit", "stop" or "leave":
+				if {tog::temp::playing::%player%} is set:
+					message "{@prefix}The user %player% has quit the game" to player and {tog::temp::playing::%player%}
+					delete {tog::temp::playing::%player%}
+					teleport player to location at 960, 70, -87 in world "Blocktopolis"
+					teleport argument 2 to location at 965, 70, -87 in world "Blocktopolis"
+				else:
+					message "{@prefix}You aren't in a game!"
+		else:
+			if argument 1 is "invite":
+				message "{@prefix}%player% wants to play you a game in The Ore Game, rules will be explained. Do you wanna play? Type /&ltog accept %player%" to argument 2
+				message "{@prefix}You sent an invite to %argument 2%."
+				set {tog::temp::invite::%argument 2%} to player
+				wait 2 minutes
+				delete {tog::temp::invite::%player%} and {tog::temp::invite::%argument 2%}
+			else if argument 1 is "accept":
+				if {tog::temp::invite::%player%} is argument 2:
+					set {tog::temp::invite::%argument 2%} to player
+					execute player command "tog play %argument 2%"
+				else:
+					message "{@prefix}You have no invite from %argument 2%"
+			else if argument 1 is "highscore":
+				if {tog::player::%argument 2%::highscore} is not set:
+					set {tog::player::%argument 2%::highscore} to 0
+				message "{@prefix}%argument 2%'s highscore is &l%{tog::player::%argument 2%::highscore}%"
+			else if argument 1 is "play":
+				if {tog::temp::invite::%player%} is not argument 2:
+					message "{@prefix}This user has not accepted the invite yet" to player
+					stop
+				if {tog::temp::invite::%argument 2%} is not player:
+					message "{@prefix}This user has not accepted the invite yet" to player
+					stop
+				delete {tog::temp::invite::%player%} and {tog::temp::invite::%argument 2%}
+				set {tog::temp::invite::%player%} to argument 2
+				set {tog::temp::invite::%argument 2%} to player
+				message "-------------------------------------"
+				message "&l&6The Ore Game!!!!"
+				message "{@goal}"
+				message "---------------------------------------------"
+				message "{@prefix}The game will start in 20 seconds!" to player and argument 2
+				message "---------------------------------------------"
+				wait 10 second
+				message "{@prefix} Teleporting you to the CAVE!"
+				message "---------------------------------------------"
+				wait a second
+				teleport player to location at 960, 70, -87 in world "Blocktopolis"
+				teleport argument 2 to location at 965, 70, -87 in world "Blocktopolis"
+				launch flickering trailing burst firework colored blue and green at player and argument 2
+				loop numbers between 20 and 1:
+					if loop-number is 15, 10, 5, 4, 3, 2 or 1:
+						play sound "BLOCK_NOTE_BLOCK_CHIME" with volume 1 and pitch 2 at player for player
+						play sound "BLOCK_NOTE_BLOCK_CHIME" with volume 1 and pitch 2 at argument 2 for argument 2
+						message "{@prefix}The game will start in %loop-number% seconds!" to player and argument 2
+				wait a second
+				play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 2 at player for player
+				message "{@prefix}&lGOOOOOOO" to player and argument 2
+
+
+				set {tog::temp::playing::%argument 2%} to 0
+				set {tog::temp::playing::%player%} to 0
+				set {tog::temp::time::%player%} to {@time}
+				while {tog::temp::playing::%player%} and {tog::temp::playing::%argument 2%} are set:
+					wait a second
+					subtract 1 second from {tog::temp::time::%player%}
+					send action bar "&6&lScores&6: &3%player%: &l%{tog::temp::playing::%player%}% &6| &2%argument 2%: &l%{tog::temp::playing::%argument 2%}% &6| &rTIME: %{tog::temp::time::%player%}%" to player and argument 2
+					if {tog::temp::time::%player%} is less than or equal to 0 seconds:
+						set {_winner} to argument 2
+						set {_loser} to player
+
+						if {tog::temp::playing::%player%} > {tog::temp::playing::%argument 2%}:
+							set {_winner} to player
+							set {_loser} to argument 2
+						else:
+							set {_winner} to argument 2
+							set {_loser} to player
+
+						play sound "UI_TOAST_CHALLENGE_COMPLETE" with volume 0.2 and pitch 1 at player for player
+						play sound "UI_TOAST_CHALLENGE_COMPLETE" with volume 0.2 and pitch 1 at argument 2 for argument 2
+						teleport player to location at 960, 70, -87 in world "Blocktopolis"
+						teleport argument 2 to location at 965, 70, -87 in world "Blocktopolis"
+						wait a second
+						message "{@prefix}&6&lThe winner is %{_winner}% by %difference between {tog::temp::playing::%{_winner}%} and {tog::temp::playing::%{_loser}%}%" to player and argument 2
+						launch flickering trailing burst firework colored blue and green at player and argument 2
+
+						#Highscores
+						if {tog::player::%player%::highscore} is not set:
+							set {tog::player::%player%::highscore} to {tog::temp::playing::%player%}
+						else if {tog::temp::playing::%player%} > {tog::player::%player%::highscore}:
+							set {tog::player::%player%::highscore} to {tog::temp::playing::%player%}
+							message "{@prefix}&6&lNEW HIGHSCORE!" to player
+
+						if {tog::player::%argument 2%::highscore} is not set:
+							set {tog::player::%argument 2%::highscore} to {tog::temp::playing::%argument 2%}
+						else if {tog::temp::playing::%argument 2%} > {tog::player::%argument 2%::highscore}:
+							set {tog::player::%argument 2%::highscore} to {tog::temp::playing::%argument 2%}
+							message "{@prefix}&6&lNEW HIGHSCORE!" to argument 2
+
+						set {_serverHighScore} to -1
+						set {_highestScorer} to ""
+
+						loop all players:
+							if {tog::player::%loop-offlineplayer%::highscore} is set:
+								if {tog::player::%loop-offlineplayer%::highscore} > {_serverHighScore}:
+									set {_serverHighScore} to {tog::player::%loop-offlineplayer%::highscore}
+									set {_highestScorer} to "%loop-offlineplayer%"
+
+					if {_serverHighScore} > -1:
+						message "{@prefix}&aThe server all-time high score is &l%{_serverHighScore}% &aheld by &l%{_winner}%" to argument 2 and player
+						give 1 diamond pickaxe to {_winner}
+						message "{@prefix}&aCongratulations! You also receive 1 diamond pickaxe as a prize!" to {_winner}
+						delete {tog::temp::playing::%player%} and {tog::temp::playing::%argument 2%}
+						delete {tog::temp::blocks::%player%::*} and {tog::temp::blocks::%argument 2%::*}
+						delete {tog::temp::time::%player%}
+						stop
+
+on place of copper ore, deepslate copper ore, emerald ore, diamond ore, gold ore, coal ore, iron ore, lapis ore, deepslate emerald ore, deepslate diamond ore, deepslate gold ore, deepslate coal ore, deepslate iron ore, deepslate lapis ore, deepslate redstone ore, or redstone ore:
+	if {tog::temp::playing::%player%} is set:
+		add location of block to {tog::temp::blocks::%player%::*}
+		message "&e[&6The Ore Game&e] &l &CDon't Cheat!!!"
+
+on break of copper ore, deepslate copper ore, emerald ore, diamond ore, gold ore, coal ore, iron ore, lapis ore, deepslate emerald ore, deepslate diamond ore, deepslate gold ore, deepslate coal ore, deepslate iron ore, deepslate lapis ore, deepslate redstone ore, or redstone ore:
+	if {tog::temp::playing::%player%} is set:
+		if {tog::temp::blocks::%player%::*} contains location of block:
+			stop
+		play sound "ENTITY_EXPERIENCE_ORB_PICKUP" with volume 1 and pitch 3 at player for player
+		if block is an emerald ore:
+			add 7 to {tog::temp::playing::%player%}
+			message "{@prefix} found a &aemerald ore!"
+		else if block is deepslate emerald ore:
+			add 17 to {tog::temp::playing::%player%}
+			message "{@prefix} found a &a deepslate emerald ore!"
+		else if block is diamond ore:
+			add 5 to {tog::temp::playing::%player%}
+			message "{@prefix} found a &aemerald ore!"
+		else if block is gold ore:
+			add 3 to {tog::temp::playing::%player%}
+			message "{@prefix} found a diamond ore!"
+		else if block is lapis ore :
+			add 1 to {tog::temp::playing::%player%}
+			message "{@prefix} found a lapis ore!"
+		else if block is redstone ore :
+			add 1 to {tog::temp::playing::%player%}
+			message "{@prefix} found a redstone ore!"
+		else if block is coal ore:
+			add 0.5 to {tog::temp::playing::%player%}
+			message "{@prefix} found a coal ore!"
+		else if block is iron ore:
+			add 0.5 to {tog::temp::playing::%player%}
+			message "{@prefix} found a iron ore!"
+		else if block is deepslate iron ore:
+			add 0.5 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate iron ore!"
+		else if block is deepslate coal ore:
+			add 0.5 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate coal ore!"
+		else if block is deepslate redstone ore:
+			add 1 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate redstone ore!"
+		else if block is deepslate lapis ore:
+			add 1 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate lapis ore!"
+		else if block is deepslate gold ore:
+			add 3 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate gold ore!"
+		else if block is deepslate diamond ore:
+			add 5 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate diamond ore!"
+		else if block is copper ore:
+			add 1 to {tog::temp::playing::%player%}
+			message "{@prefix} found a copper ore!"
+		else if block is deepslate copper ore:
+			add 1 to {tog::temp::playing::%player%}
+			message "{@prefix} found a deepslate copper ore!"
+
+command /togreset resethighscore:
+    permission: tog.admin
+    trigger:
+        delete {tog::player::*}
+        message "Highscore for All players has been reset."

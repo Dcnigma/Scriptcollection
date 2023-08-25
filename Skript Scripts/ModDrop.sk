@@ -1,0 +1,63 @@
+
+on death:
+		if victim is Vindicator:
+				remove all emeralds from the drops
+				remove all emerald from the drops
+				drop 1 diamond
+				chance of 25%:
+						drop 2 diamonds at victim
+
+on death:
+		if victim is Evoker:
+				remove all emeralds from the drops
+				remove all emerald from the drops
+#				remove all totem of undying from the drops
+				drop 1 diamond
+				chance of 25%:
+						drop 2 diamonds at victim
+						drop totem of undying at victim
+						chance of 5%:
+								drop totem of undying at victim
+
+
+
+on death:
+		if victim is Pillager:
+				remove all emeralds from the drops
+				remove all emerald from the drops
+				remove all emerald ore from the drops
+				remove all emerald block from the drops
+				drop 1 diamond
+				chance of 25%:
+						drop 2 diamonds at victim
+
+on command:
+	if {game::%player%::playing} is true:
+		if the command is "vote":
+			message "Thank you for Voting!!!"
+
+
+on block break:
+    if event-block is emerald ore:
+#        broadcast "A emerald has been mined!"
+        send "A emerald has been mined! %event-location%" to console
+    if event-block is diamond ore:
+#        broadcast "A emerald has been mined!"
+        send "A emerald has been mined! %event-location%" to console
+on pick up:
+#		if event-item is emerald #named "emerald":
+		if item is emerald:
+#				send "&aYou picked up an emerald!" to player
+				log "Player %player% picked up an emerald!"
+				set {_amount} to item amount of event-item
+				send "Player %player% got %player's tool%! @ %event-location%!" to console
+#				send "Player %player% got %player's tool%!" to player
+
+on player drop:
+#		if event-item is emerald #named "emerald":
+		if item is emerald:
+#				send "&aYou dropt an emerald!" to player
+				log "Player %player% dropt an emerald!"
+				set {_amount} to item amount of event-item
+				send "Player %player% got %player's tool%! @ %event-location%!" to console
+#				send "Player %player% dropt %player's tool%!" to player

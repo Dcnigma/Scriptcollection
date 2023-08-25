@@ -1,0 +1,5 @@
+command /DelayCommand <text>:
+    trigger:
+        set {_command} to arg-1
+        wait 5 second
+        execute console command {_command}
