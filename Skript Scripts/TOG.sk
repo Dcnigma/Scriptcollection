@@ -1,15 +1,15 @@
 options:
 	prefix: &e[&6The Ore Game&e] &r
 	goal: &r&fThe goal of the game is to be the player with the most &cpoints&f, in order to get &cpoints&f you need to &amine ores&f, each ore has a set value of &cpoints&f, &aemeralds &c7&f, &bdiamonds &c5&f, &6gold &c3&f, &9lapis &c1&f, &4redstone &c1&f, &7iron &c0.5 &3copper, &c0.5 &fand &7coal &c0.5
-	time: 20 seconds #2 minutes
+	time: 20 seconds #25 minutes
 	# Set location player one
 	xp1 : 144
 	yp1 : 188
 	zp1 : 69
 	# Set location player two
-	xp2 : 74
-	yp2 : 201
-	zp2 : 76
+	xp2 : 146
+	yp2 : 188
+	zp2 : 69
 	# Set world location.
 	world : Blocktopolis
 
@@ -40,16 +40,12 @@ command /tog [<text>] [<player>]:
 				message "{@prefix}Your highscore is &l%{tog::player::%player%::highscore}%"
 			else if argument 1 is "quit", "stop" or "leave":
 				if {tog::temp::playing::%player%} is set:
-					teleport player to {_oldLocation}
-					teleport argument 2 to {_oldLocationp2}
-
-					open {_inventory} to player
-					open {_inventoryp2} to argument 2
-
-					wait 2 minutes
 					message "{@prefix}The user %player% has quit the game" to player and {tog::temp::playing::%player%}
 					delete {tog::temp::playing::%player%}
-
+					teleport player to {_oldLocation}
+					teleport argument 2 to {_oldLocationp2}
+					open {_inventory} to player
+					open {_inventoryp2} to argument 2
 				else:
 					message "{@prefix}You aren't in a game!"
 		else:
@@ -60,6 +56,9 @@ command /tog [<text>] [<player>]:
 				set {_oldLocation} to location of player
 				set {_oldLocationp2} to location of argument 2
 				set {tog::temp::invite::%argument 2%} to player
+				message "-------------------------------------"
+				message "{@goal}"
+				message "---------------------------------------------"
 				wait 2 minutes
 				delete {tog::temp::invite::%player%} and {tog::temp::invite::%argument 2%}
 			else if argument 1 is "accept":
@@ -82,7 +81,9 @@ command /tog [<text>] [<player>]:
 				if {tog::temp::invite::%argument 2%} is not player:
 					message "{@prefix}This user has not accepted the invite yet" to player
 					stop
-
+				delete {tog::temp::invite::%player%} and {tog::temp::invite::%argument 2%}
+				set {tog::temp::invite::%player%} to argument 2
+				set {tog::temp::invite::%argument 2%} to player
 				send title "Waiting 1 minute" with subtitle "to store your items!" to player and argument 2 for 5 seconds
 				wait 5 seconds
 				open chest inventory with 4 row named "Respawn Chest player" to player
@@ -90,38 +91,43 @@ command /tog [<text>] [<player>]:
 				open chest inventory with 4 row named "Respawn Chest player 2" to argument 2
 				set {_inventoryp2} to chest inventory named "Respawn Chest player 2"
 
-				# wait 1 minutes
-				delete {tog::temp::invite::%player%} and {tog::temp::invite::%argument 2%}
-
 				set {_oldLocation} to location of player
 				set {_oldLocationp2} to location of argument 2
 
-				set {tog::temp::invite::%player%} to argument 2
-				set {tog::temp::invite::%argument 2%} to player
-
 				open {_inventory} to player
 				open {_inventoryp2} to argument 2
-
-
-				message "-------------------------------------"
-				message "&l&6The Ore Game!!!!"
-				message "{@goal}"
+				wait 5 seconds
+				message "-------------------------------------" to player and argument 2
+				wait 5 seconds
+				message "&l&6The Ore Game!!!!" to player and argument 2
+				wait 5 seconds
+				message "{@goal}" to player and argument 2
+				wait 5 seconds
+				message "---------------------------------------------" to player and argument 2
+				wait 5 seconds
+				send title "Game will start" with subtitle "With in 20 seconds!" to player and argument 2 for 5 seconds
+				wait 5 seconds
+				message "{@prefix}The game will start in 15 seconds!" to player and argument 2
+				wait 5 seconds
 				message "---------------------------------------------"
-				send title "The game will start" with subtitle "in 20 seconds!" to player and argument 2 for 15 seconds
-				message "{@prefix}The game will start in 20 seconds!" to player and argument 2
+				wait 5 seconds
+				message "{@prefix} Teleporting you to the CAVE! Hold ON!" to player and argument 2
+				wait 5 seconds
 				message "---------------------------------------------"
-				wait 30 seconds
-				message "{@prefix} Teleporting you to the CAVE!"
-				message "---------------------------------------------"
-				wait a seconds
+				wait 5 seconds
 				teleport player to location at {@xp1}, {@zp1}, {@yp1} in world "{@world}"
 				teleport argument 2 to location at {@xp2}, {@zp2}, {@yp2} in world "{@world}"
+				wait 5 seconds
+				give 128 torch to player and argument 2
+				message "{@prefix} Some extra torchs for the dark!" to player and argument 2
 				#launch flickering trailing burst firework colored blue and green at player and argument 2
 				loop numbers between 20 and 1:
 					if loop-number is 15, 10, 5, 4, 3, 2 or 1:
+						send action bar "{@prefix}The game will start in %loop-number% seconds!" to player and argument 2
+						#message "{@prefix}The game will start in %loop-number% seconds!" to player
+						#message "{@prefix}The game will start in %loop-number% seconds!" to argument 2
 						play sound "BLOCK_NOTE_BLOCK_CHIME" with volume 1 and pitch 2 at player for player
 						play sound "BLOCK_NOTE_BLOCK_CHIME" with volume 1 and pitch 2 at argument 2 for argument 2
-						message "{@prefix}The game will start in %loop-number% seconds!" to player and argument 2
 				wait a second
 				play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 2 at player for player
 				#message "{@prefix}&lGOOOOOOO" to player and argument 2
@@ -136,30 +142,44 @@ command /tog [<text>] [<player>]:
 					subtract 1 second from {tog::temp::time::%player%}
 					send action bar "&6&lScores&6: &3%player%: &l%{tog::temp::playing::%player%}% &6| &2%argument 2%: &l%{tog::temp::playing::%argument 2%}% &6| &rTIME: %{tog::temp::time::%player%}%" to player and argument 2
 					if {tog::temp::time::%player%} is less than or equal to 0 seconds:
-						set {_winner} to argument 2
-						set {_loser} to player
-
+						set {_winner} to ""
 						if {tog::temp::playing::%player%} > {tog::temp::playing::%argument 2%}:
 							set {_winner} to player
 							set {_loser} to argument 2
-						else:
+						else if {tog::temp::playing::%argument 2%} > {tog::temp::playing::%player%}:
 							set {_winner} to argument 2
 							set {_loser} to player
 
-						play sound "UI_TOAST_CHALLENGE_COMPLETE" with volume 0.2 and pitch 1 at player for player
-						play sound "UI_TOAST_CHALLENGE_COMPLETE" with volume 0.2 and pitch 1 at argument 2 for argument 2
-						teleport player to {_oldLocation}
-						teleport argument 2 to {_oldLocationp2}
+						if {_winner} is not "":
+							play sound "UI_TOAST_CHALLENGE_COMPLETE" with volume 0.2 and pitch 1 at player for player
+							play sound "UI_TOAST_CHALLENGE_COMPLETE" with volume 0.2 and pitch 1 at argument 2 for argument 2
+							teleport player to {_oldLocation}
+							teleport argument 2 to {_oldLocationp2}
 
-						message "{@prefix}&6&lTake your stuff " to player and argument 2
-						wait 3 second
+							message "{@prefix}&6&lTake your stuff " to player and argument 2
+							wait 3 second
 
 
-						open {_inventory} to player
-						open {_inventoryp2} to argument 2
-						send title "&6&lThe winner is %{_winner}%" with subtitle "by %difference between {tog::temp::playing::%{_winner}%} and {tog::temp::playing::%{_loser}%}%" to player and argument 2 for 15 seconds
-						message "{@prefix}&6&lThe winner is %{_winner}% by %difference between {tog::temp::playing::%{_winner}%} and {tog::temp::playing::%{_loser}%}%" to player and argument 2
-						#launch flickering trailing burst firework colored blue and green at player and argument 2
+							open {_inventory} to player
+							open {_inventoryp2} to argument 2
+							send title "&6&lThe winner is " with subtitle "%{_winner}% by %difference between {tog::temp::playing::%{_winner}%} and {tog::temp::playing::%{_loser}%}% points more!" to player and argument 2 for 15 seconds
+							#send title "&6&lThe winner is " with subtitle "%{_winner}% receive extra rewards!" to player and argument 2 for 15 seconds
+
+						# Winner
+							execute console command "cuscra give %{_winner}% customcrafting:roastedemerlad 1"
+							give 1 emerald to {_winner}
+							message "{@prefix}&6&lThe winner is %{_winner}% by %difference between {tog::temp::playing::%{_winner}%} and {tog::temp::playing::%{_loser}%}% points more!" to player and argument 2
+							#launch flickering trailing burst firework colored blue and green at player and argument 2
+							delete {tog::temp::playing::%player%} and {tog::temp::playing::%argument 2%}
+							delete {tog::temp::blocks::%player%::*} and {tog::temp::blocks::%argument 2%::*}
+							delete {tog::temp::time::%player%}
+						else:
+		        # If it's a draw, Give rewards to both players
+							send title "&6&lIt's a Draw!" with subtitle "No winner this time!" to player and argument 2 for 15 seconds
+							give 1 diamond to player
+							give 1 diamond to argument 2
+							open {_inventory} to player
+							open {_inventoryp2} to argument 2
 
 						#Highscores
 						if {tog::player::%player%::highscore} is not set:
@@ -185,8 +205,8 @@ command /tog [<text>] [<player>]:
 
 					if {_serverHighScore} > -1:
 						message "{@prefix}&aThe server all-time high score is &l%{_serverHighScore}% &aheld by &l%{_winner}%" to argument 2 and player
-						give 1 diamond pickaxe to {_winner}
-						message "{@prefix}&aCongratulations! You also receive 1 diamond pickaxe as a prize!" to {_winner}
+						#give 1 diamond pickaxe to {_winner}
+						#message "{@prefix}&aCongratulations! You also receive 1 diamond pickaxe as a prize!" to {_winner}
 						delete {tog::temp::playing::%player%} and {tog::temp::playing::%argument 2%}
 						delete {tog::temp::blocks::%player%::*} and {tog::temp::blocks::%argument 2%::*}
 						delete {tog::temp::time::%player%}
