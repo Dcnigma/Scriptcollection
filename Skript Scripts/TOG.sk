@@ -1,3 +1,38 @@
+# The Ore game 1.0
+# by Dcnigma
+#
+# The goal of the game is to be the player with the most points,
+# in order to get &cpoints&f you need to mine ores,
+# each ore has a set value of points,
+# emeralds  7
+# diamonds  5
+# gold      3
+# lapis     1
+# redstone  1
+# iron      0.5
+# copper    0.5
+# coal      0.5
+#
+# This is a heavily modified version of Abba Caving 1.0
+# source: https://forums.skunity.com/resources/abba-caving.715/
+#
+# Whats New in my version?
+# --------------------------------
+# - Updated for the new deepslate versions of the ores.
+#	- Added message "don't cheat! When placing a ore-block in game"
+#	- Added a reward system.
+#	- Added a check for a Draw game.
+# - Added a option to save your inventory before caving.
+# - Added a option to give players extra items to start,
+#		 like torchs; and these get removed if they stop, disconnect or win the Game.
+# - If you accept the game it saved your location before you start the game,
+#   	this will tp you back to where you accepted the game at the end of the game.
+#	- Added a xzy location for the players to tp @ to start the game. Chose your Cave.
+#	  look for a good start location for your players and fill in the values
+#	   on the todo: create a system for more locations so it will be (more) random.
+
+
+
 options:
 	prefix: &e[&6The Ore Game&e] &r
 	goal: &r&fThe goal of the game is to be the player with the most &cpoints&f, in order to get &cpoints&f you need to &amine ores&f, each ore has a set value of &cpoints&f, &aemeralds &c7&f, &bdiamonds &c5&f, &6gold &c3&f, &9lapis &c1&f, &4redstone &c1&f, &7iron &c0.5 &3copper, &c0.5 &fand &7coal &c0.5
@@ -41,6 +76,10 @@ command /tog [<text>] [<player>]:
 			else if argument 1 is "quit", "stop" or "leave":
 				if {tog::temp::playing::%player%} is set:
 					message "{@prefix}The user %player% has quit the game" to player and {tog::temp::playing::%player%}
+					teleport player to {_oldLocation}
+					teleport argument 2 to {_oldLocationp2}
+					open {_inventory} to player
+					open {_inventoryp2} to argument 2
 					remove all torch from player
 					remove all torch from argument 2
 					delete {tog::temp::playing::%player%}
@@ -87,10 +126,10 @@ command /tog [<text>] [<player>]:
 				send title "Waiting 1 minute" with subtitle "to store your items &aDon't bring torchs!" to player and argument 2 for 5 seconds
 				message "{@prefix}&aDon't bring torchs, put them away if you don't want to lose them!!" to argument 2 and player
 				wait 5 seconds
-				open chest inventory with 4 row named "[The ORE Gamem] Chest player" to player
-				set {_inventory} to chest inventory named "[The ORE Gamem] Chest player"
-				open chest inventory with 4 row named "[The ORE Gamem] Chest player 2" to argument 2
-				set {_inventoryp2} to chest inventory named "[The ORE Gamem] Chest player 2"
+				open chest inventory with 4 row named "[The ORE Game] Chest player" to player
+				set {_inventory} to chest inventory named "[The ORE Game] Chest player"
+				open chest inventory with 4 row named "[The ORE Game] Chest Player 2" to argument 2
+				set {_inventoryp2} to chest inventory named "[The ORE Game] Chest Player 2"
 
 				set {_oldLocation} to location of player
 				set {_oldLocationp2} to location of argument 2
@@ -169,12 +208,12 @@ command /tog [<text>] [<player>]:
 							teleport player to {_oldLocation}
 							teleport argument 2 to {_oldLocationp2}
 
-							message "{@prefix}&6&lTake your stuff " to player and argument 2
-							wait 3 second
+							#message "{@prefix}&6&lTake your stuff " to player and argument 2
+							#wait 3 second
 
 
-							open {_inventory} to player
-							open {_inventoryp2} to argument 2
+							#open {_inventory} to player
+							#open {_inventoryp2} to argument 2
 							send title "&6&lThe winner is " with subtitle "%{_winner}% by %difference between {tog::temp::playing::%{_winner}%} and {tog::temp::playing::%{_loser}%}% points more!" to player and argument 2 for 15 seconds
 							#send title "&6&lThe winner is " with subtitle "%{_winner}% receive extra rewards!" to player and argument 2 for 15 seconds
 
@@ -224,6 +263,8 @@ command /tog [<text>] [<player>]:
 						remove all torch from argument 2
 						teleport player to {_oldLocation}
 						teleport argument 2 to {_oldLocationp2}
+						open {_inventory} to player
+						open {_inventoryp2} to argument 2
 						message "{@prefix}&aSorry, you can't keep the &ctorchs!" to argument 2 and player
 						delete {tog::temp::playing::%player%} and {tog::temp::playing::%argument 2%}
 						delete {tog::temp::blocks::%player%::*} and {tog::temp::blocks::%argument 2%::*}
