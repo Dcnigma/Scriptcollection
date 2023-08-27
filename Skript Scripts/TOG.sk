@@ -1,7 +1,7 @@
 options:
 	prefix: &e[&6The Ore Game&e] &r
 	goal: &r&fThe goal of the game is to be the player with the most &cpoints&f, in order to get &cpoints&f you need to &amine ores&f, each ore has a set value of &cpoints&f, &aemeralds &c7&f, &bdiamonds &c5&f, &6gold &c3&f, &9lapis &c1&f, &4redstone &c1&f, &7iron &c0.5 &3copper, &c0.5 &fand &7coal &c0.5
-	time: 20 seconds #25 minutes
+	time: 5 minutes #2 60 seconds
 	# Set location player one
 	xp1 : 144
 	yp1 : 188
@@ -27,7 +27,7 @@ command /tog [<text>] [<player>]:
 			message "---------------------------------------------"
 			message "       &e<> = required [] = optional"
 			message "{@prefix}/tog - &eBring up this menu"
-			message "{@prefix}/tog quit - &eLeave a game"
+			message "{@prefix}/tog quit - &eLeave a game                           &cDon't Stop if you put items in the chest, you will lose them [bewarend]!"
 			message "{@prefix}/tog accept <user> - &eAccept an invite"
 			message "{@prefix}/tog invite <user> - &eInvite a user to play"
 			message "{@prefix}/tog highscore [user] - &eView highscores"
@@ -41,17 +41,17 @@ command /tog [<text>] [<player>]:
 			else if argument 1 is "quit", "stop" or "leave":
 				if {tog::temp::playing::%player%} is set:
 					message "{@prefix}The user %player% has quit the game" to player and {tog::temp::playing::%player%}
+					remove all torch from player
+					remove all torch from argument 2
 					delete {tog::temp::playing::%player%}
-					teleport player to {_oldLocation}
-					teleport argument 2 to {_oldLocationp2}
-					open {_inventory} to player
-					open {_inventoryp2} to argument 2
+
 				else:
 					message "{@prefix}You aren't in a game!"
 		else:
 			if argument 1 is "invite":
-				send title "{@prefix}" with subtitle "Have fun, Stay safe!" to player and argument 2 for 5 seconds
+				send title "{@prefix}" with subtitle "&aDon't bring torchs!!" to player and argument 2 for 5 seconds
 				message "{@prefix}%player% wants to play you a game in The Ore Game, rules will be explained. Do you wanna play? Type /&ltog accept %player%" to argument 2
+				message "{@prefix}&aDon't bring torchs!!" to argument 2 and player
 				message "{@prefix}You sent an invite to %argument 2%."
 				set {_oldLocation} to location of player
 				set {_oldLocationp2} to location of argument 2
@@ -84,12 +84,13 @@ command /tog [<text>] [<player>]:
 				delete {tog::temp::invite::%player%} and {tog::temp::invite::%argument 2%}
 				set {tog::temp::invite::%player%} to argument 2
 				set {tog::temp::invite::%argument 2%} to player
-				send title "Waiting 1 minute" with subtitle "to store your items!" to player and argument 2 for 5 seconds
+				send title "Waiting 1 minute" with subtitle "to store your items &aDon't bring torchs!" to player and argument 2 for 5 seconds
+				message "{@prefix}&aDon't bring torchs, put them away if you don't want to lose them!!" to argument 2 and player
 				wait 5 seconds
-				open chest inventory with 4 row named "Respawn Chest player" to player
-				set {_inventory} to chest inventory named "Respawn Chest player"
-				open chest inventory with 4 row named "Respawn Chest player 2" to argument 2
-				set {_inventoryp2} to chest inventory named "Respawn Chest player 2"
+				open chest inventory with 4 row named "[The ORE Gamem] Chest player" to player
+				set {_inventory} to chest inventory named "[The ORE Gamem] Chest player"
+				open chest inventory with 4 row named "[The ORE Gamem] Chest player 2" to argument 2
+				set {_inventoryp2} to chest inventory named "[The ORE Gamem] Chest player 2"
 
 				set {_oldLocation} to location of player
 				set {_oldLocationp2} to location of argument 2
@@ -97,29 +98,41 @@ command /tog [<text>] [<player>]:
 				open {_inventory} to player
 				open {_inventoryp2} to argument 2
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 60!" to player and argument 2
 				message "-------------------------------------" to player and argument 2
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 55!" to player and argument 2
 				message "&l&6The Ore Game!!!!" to player and argument 2
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 50!" to player and argument 2
 				message "{@goal}" to player and argument 2
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 45!" to player and argument 2
 				message "---------------------------------------------" to player and argument 2
 				wait 5 seconds
-				send title "Game will start" with subtitle "With in 20 seconds!" to player and argument 2 for 5 seconds
+				send action bar "{@prefix}The game will start in 40!" to player and argument 2
+				send title "Game will start" with subtitle "With in 40 seconds!" to player and argument 2 for 5 seconds
 				wait 5 seconds
-				message "{@prefix}The game will start in 15 seconds!" to player and argument 2
+				send action bar "{@prefix}The game will start in 35!" to player and argument 2
+				message "{@prefix}The game will start in 30 seconds!" to player and argument 2
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 30!" to player and argument 2
 				message "---------------------------------------------"
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 25!" to player and argument 2
 				message "{@prefix} Teleporting you to the CAVE! Hold ON!" to player and argument 2
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 20!" to player and argument 2
 				message "---------------------------------------------"
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 15!" to player and argument 2
 				teleport player to location at {@xp1}, {@zp1}, {@yp1} in world "{@world}"
 				teleport argument 2 to location at {@xp2}, {@zp2}, {@yp2} in world "{@world}"
 				wait 5 seconds
+				send action bar "{@prefix}The game will start in 10!" to player and argument 2
 				give 128 torch to player and argument 2
 				message "{@prefix} Some extra torchs for the dark!" to player and argument 2
+				send action bar "{@prefix}The game will start in 5!" to player and argument 2
 				#launch flickering trailing burst firework colored blue and green at player and argument 2
 				loop numbers between 20 and 1:
 					if loop-number is 15, 10, 5, 4, 3, 2 or 1:
@@ -207,10 +220,19 @@ command /tog [<text>] [<player>]:
 						message "{@prefix}&aThe server all-time high score is &l%{_serverHighScore}% &aheld by &l%{_winner}%" to argument 2 and player
 						#give 1 diamond pickaxe to {_winner}
 						#message "{@prefix}&aCongratulations! You also receive 1 diamond pickaxe as a prize!" to {_winner}
+						remove all torch from player
+						remove all torch from argument 2
+						teleport player to {_oldLocation}
+						teleport argument 2 to {_oldLocationp2}
+						message "{@prefix}&aSorry, you can't keep the &ctorchs!" to argument 2 and player
 						delete {tog::temp::playing::%player%} and {tog::temp::playing::%argument 2%}
 						delete {tog::temp::blocks::%player%::*} and {tog::temp::blocks::%argument 2%::*}
 						delete {tog::temp::time::%player%}
 						stop
+
+on disconnect:
+	if {tog::temp::time::%player%} is bigger than 0 seconds:
+		remove all torch from player
 
 on place of copper ore, deepslate copper ore, emerald ore, diamond ore, gold ore, coal ore, iron ore, lapis ore, deepslate emerald ore, deepslate diamond ore, deepslate gold ore, deepslate coal ore, deepslate iron ore, deepslate lapis ore, deepslate redstone ore, or redstone ore:
 	if {tog::temp::playing::%player%} is set:
@@ -226,7 +248,7 @@ on break of copper ore, deepslate copper ore, emerald ore, diamond ore, gold ore
 			add 7 to {tog::temp::playing::%player%}
 			message "{@prefix} found a &aemerald ore!"
 		else if block is deepslate emerald ore:
-			add 17 to {tog::temp::playing::%player%}
+			add 7 to {tog::temp::playing::%player%}
 			message "{@prefix} found a &a deepslate emerald ore!"
 		else if block is diamond ore:
 			add 5 to {tog::temp::playing::%player%}
